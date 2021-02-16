@@ -1,0 +1,21 @@
+{
+    "short_name": "安心出行",
+    "name": "安心出行",
+    "icons": [
+        {
+            "src": "appicon192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "appicon192.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "./index.html",
+    "background_color": "#12b188",
+    "orientation": "portrait",
+    "display": "standalone",
+    "scope": "./"
+}
