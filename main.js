@@ -1,3 +1,11 @@
+setTimeout(() => {
+    load_img('pass_top.png');
+    load_img('pass_bottom.png');
+    load_img('getcode_top.png');
+    load_img('welcome_top.png');
+    load_img('welcome_bottom.png');
+}, 300);
+
 var d1;
 /** @type string */
 var code;
@@ -194,7 +202,7 @@ async function welcome() {
     {
         //context region
         let c = setup_canvas(canvas);
-        let [cp, cw, ch, context] = [c.cp,  c.cw, c.ch, c.context];
+        let [cp, cw, ch, context] = [c.cp, c.cw, c.ch, c.context];
 
         context.save();
         context.fillStyle = '#fff';
