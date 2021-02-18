@@ -1,3 +1,7 @@
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
+
 setTimeout(() => {
     load_img('pass_top.png');
     load_img('pass_bottom.png');
