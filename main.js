@@ -10,9 +10,9 @@ var d1;
 /** @type string */
 var code;
 async function showpass() {
-    let translatedcode = u_atob(code.substr(6));
     let data = {};
     try {
+        let translatedcode = u_atob(code.substr(6));
         data = JSON.parse(translatedcode.substr(translatedcode.indexOf('{')));
     } catch (e) {
     }
