@@ -102,10 +102,11 @@ async function getcode() {
     while (video.readyState != video.HAVE_ENOUGH_DATA) await wait_frame_out();
     let vh = canvas.height = video.videoHeight;
     let vw = canvas.width = video.videoWidth;
-    let ch = window.innerWidth / vw * vh;
-    let ct = (window.innerHeight - ch) / 2;
+    let ch = document.body.clientWidth / vw * vh;
+    let ct = (document.body.clientWidth - ch) / 2;
     canvas.style.top = ct + 'px';
     canvas.style.height = ch + 'px';
+    canvas.style.width = '100vw';
 
     let context = canvas.getContext("2d");
 
