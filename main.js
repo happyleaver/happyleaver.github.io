@@ -112,60 +112,64 @@ async function getcode() {
     //draw decoration
     let canvas2 = add({ ele: d1, tag: 'canvas', style: 'width:100%;height:100%;position:absolute;top:0px;left:0px;' });
     let getcodetopimg = await load_img('getcode_top.png');
+    let last_decorate_color;
     let decorate_camera = function (color) {
-        //context region
-        let c = setup_canvas(canvas2);
-        let [cp, cx, cy, cw, ch, context] = [c.cp, c.cx, c.cy, c.cw, c.ch, c.context];
-        //fill black background
-        context.save();
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.lineTo(cw, 0);
-        context.lineTo(cw, ch);
-        context.lineTo(0, ch);
-        context.lineTo(0, 0);
-        context.closePath();
-        let [hx, hy, hw, hh] = [cw * .15, (ch - cw * .7) / 2, cw * .7, cw * .7];
-        context.moveTo(hx, hy);
-        context.lineTo(hx, hy + hh);
-        context.lineTo(hx + hw, hy + hh);
-        context.lineTo(hx + hw, hy);
-        context.lineTo(hx, hy);
-        context.closePath();
-        context.fillStyle = 'rgb(0,0,0,.5)';
-        context.fill();
-        context.restore();
-        //draw border
-        context.save();
-        let lt = 2.5 * cp;
-        context.beginPath();
-        context.moveTo(hx - lt / 2, hy - lt / 2 + hh * .2);
-        context.lineTo(hx - lt / 2, hy - lt / 2);
-        context.lineTo(hx - lt / 2 + hw * .2, hy - lt / 2);
-        context.moveTo(hx + hw + lt / 2, hy - lt / 2 + hh * .2);
-        context.lineTo(hx + hw + lt / 2, hy - lt / 2);
-        context.lineTo(hx + hw + lt / 2 - hw * .2, hy - lt / 2);
-        context.moveTo(hx - lt / 2, hy + hh + lt / 2 - hh * .2);
-        context.lineTo(hx - lt / 2, hy + hh + lt / 2);
-        context.lineTo(hx - lt / 2 + hw * .2, hy + hh + lt / 2);
-        context.moveTo(hx + hw + lt / 2, hy + hh + lt / 2 - hh * .2);
-        context.lineTo(hx + hw + lt / 2, hy + hh + lt / 2);
-        context.lineTo(hx + hw + lt / 2 - hw * .2, hy + hh + lt / 2);
+        if (color != last_decorate_color) {
+            last_decorate_color = color;
+            //context region
+            let c = setup_canvas(canvas2);
+            let [cp, cx, cy, cw, ch, context] = [c.cp, c.cx, c.cy, c.cw, c.ch, c.context];
+            //fill black background
+            context.save();
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(cw, 0);
+            context.lineTo(cw, ch);
+            context.lineTo(0, ch);
+            context.lineTo(0, 0);
+            context.closePath();
+            let [hx, hy, hw, hh] = [cw * .15, (ch - cw * .7) / 2, cw * .7, cw * .7];
+            context.moveTo(hx, hy);
+            context.lineTo(hx, hy + hh);
+            context.lineTo(hx + hw, hy + hh);
+            context.lineTo(hx + hw, hy);
+            context.lineTo(hx, hy);
+            context.closePath();
+            context.fillStyle = 'rgb(0,0,0,.5)';
+            context.fill();
+            context.restore();
+            //draw border
+            context.save();
+            let lt = 2.5 * cp;
+            context.beginPath();
+            context.moveTo(hx - lt / 2, hy - lt / 2 + hh * .2);
+            context.lineTo(hx - lt / 2, hy - lt / 2);
+            context.lineTo(hx - lt / 2 + hw * .2, hy - lt / 2);
+            context.moveTo(hx + hw + lt / 2, hy - lt / 2 + hh * .2);
+            context.lineTo(hx + hw + lt / 2, hy - lt / 2);
+            context.lineTo(hx + hw + lt / 2 - hw * .2, hy - lt / 2);
+            context.moveTo(hx - lt / 2, hy + hh + lt / 2 - hh * .2);
+            context.lineTo(hx - lt / 2, hy + hh + lt / 2);
+            context.lineTo(hx - lt / 2 + hw * .2, hy + hh + lt / 2);
+            context.moveTo(hx + hw + lt / 2, hy + hh + lt / 2 - hh * .2);
+            context.lineTo(hx + hw + lt / 2, hy + hh + lt / 2);
+            context.lineTo(hx + hw + lt / 2 - hw * .2, hy + hh + lt / 2);
 
-        context.lineWidth = lt;
-        context.strokeStyle = color;
-        context.stroke();
-        context.restore();
+            context.lineWidth = lt;
+            context.strokeStyle = color;
+            context.stroke();
+            context.restore();
 
-        context.save();
-        context.fillStyle = '#fff';
-        context.font = 5 * cp + 'px Arial';
-        context.textBaseline = 'middle';
-        context.textAlign = 'center'
-        context.fillText('掃瞄二維碼' + ct, cw / 2, hy + hh + 13 * cp);
-        context.restore();//end second text
+            context.save();
+            context.fillStyle = '#fff';
+            context.font = 5 * cp + 'px Arial';
+            context.textBaseline = 'middle';
+            context.textAlign = 'center'
+            context.fillText('掃瞄二維碼', cw / 2, hy + hh + 13 * cp);
+            context.restore();//end second text
 
-        context.drawImage(getcodetopimg, 0, 0, cw, cw / getcodetopimg.width * getcodetopimg.height);
+            context.drawImage(getcodetopimg, 0, 0, cw, cw / getcodetopimg.width * getcodetopimg.height);
+        }
     }
 
     //render callback
