@@ -89,7 +89,7 @@ async function showpass() {
     location.reload();
 }
 async function getcode() {
-    let canvas = add({ ele: d1, tag: 'canvas', style: 'width:100%;height:100%;background-color:#000;' });
+    let canvas = add({ ele: d1, tag: 'canvas', style: 'position:absolute;background-color:#000;' });
 
     //start camera
     var video = document.createElement("video");
@@ -102,6 +102,11 @@ async function getcode() {
     while (video.readyState != video.HAVE_ENOUGH_DATA) await wait_frame_out();
     let vh = canvas.height = video.videoHeight;
     let vw = canvas.width = video.videoWidth;
+    let ch = window.innerWidth / vw * vh;
+    let ct = (window.innerHeight - ch) / 2;
+    canvas.style.top = ct + 'px';
+    canvas.style.height = ch + 'px';
+
     let context = canvas.getContext("2d");
 
     //render callback
@@ -174,7 +179,6 @@ async function getcode() {
 
         context.drawImage(getcodetopimg, 0, 0, cw, cw / getcodetopimg.width * getcodetopimg.height);
     }
-
 
     //get code from camera
     code = await (new Promise(resolve => {
