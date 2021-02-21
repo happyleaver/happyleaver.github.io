@@ -217,7 +217,7 @@ async function getcode() {
     canvas2.remove();
     video.remove();
     canvas.remove();
-
+    canvas_clip.remove();
 }
 async function welcome() {
     let welcometopimg = await load_img('welcome_top.png');
