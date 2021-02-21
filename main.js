@@ -12,17 +12,8 @@ setTimeout(() => {
 
 var d1;
 /** @type string */
-var code;
+var locname;
 async function showpass() {
-    let data = {};
-    try {
-        let translatedcode = u_atob(code.substr(6));
-        data = JSON.parse(translatedcode.substr(translatedcode.indexOf('{')));
-    } catch (e) {
-    }
-
-    if ('nameZh' in data) locname = data.nameZh;
-    else locname = '唔知邊L度';
 
     //show
     let passtopimg = await load_img('pass_top.png');
@@ -70,20 +61,23 @@ async function showpass() {
     context.restore();
 
     function inquit(pos) {
-        return false;
+        if (pos.length == 2)
+            return (
+                (pos[0] > canvas.clientWidth / passtopimg.width * 760 &&
+                    pos[1] < canvas.clientWidth / passtopimg.width * 120) ||
+                (pos[0] > canvas.clientWidth / passtopimg.width * 153 &&
+                    pos[0] < canvas.clientWidth / passtopimg.width * 775 &&
+                    canvas.clientHeight - pos[1] < canvas.clientWidth / passtopimg.width * 290 &&
+                    canvas.clientHeight - pos[1] > canvas.clientWidth / passtopimg.width * 150)
+            )
+        else
+            return false;
     }
 
     let quitpos = [];
     while (!inquit(quitpos)) {
         let e = await wait_event({ ele: canvas, type: 'mousedown' });
-        if (
-            (e.clientX > canvas.clientWidth / passtopimg.width * 760 &&
-                e.clientY < canvas.clientWidth / passtopimg.width * 120) ||
-            (e.clientX > canvas.clientWidth / passtopimg.width * 153 &&
-                e.clientX < canvas.clientWidth / passtopimg.width * 775 &&
-                canvas.clientHeight - e.clientY < canvas.clientWidth / passtopimg.width * 290 &&
-                canvas.clientHeight - e.clientY > canvas.clientWidth / passtopimg.width * 150)
-        ) break;
+        quitpos = [e.clientX, e.clientY];
     }
     canvas.remove();
     location.reload();
@@ -110,22 +104,10 @@ async function getcode() {
 
     let context = canvas.getContext("2d");
 
-    //render callback
-    function render(resolve) {
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            context.drawImage(video, 0, 0, vw, vh);
-            let imageData = context.getImageData(0, 0, vw, vh);
-            let code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
-            if (code) resolve(code.data);
-
-        }
-        requestAnimationFrame(render.bind(this, resolve));
-    }
-
     //draw decoration
     let canvas2 = add({ ele: d1, tag: 'canvas', style: 'width:100%;height:100%;position:absolute;top:0px;left:0px;' });
-    {
-        let getcodetopimg = await load_img('getcode_top.png');
+    let getcodetopimg = await load_img('getcode_top.png');
+    let decorate_camera = function (color) {
         //context region
         let c = setup_canvas(canvas2);
         let [cp, cx, cy, cw, ch, context] = [c.cp, c.cx, c.cy, c.cw, c.ch, c.context];
@@ -166,7 +148,7 @@ async function getcode() {
         context.lineTo(hx + hw + lt / 2 - hw * .2, hy + hh + lt / 2);
 
         context.lineWidth = lt;
-        context.strokeStyle = '#12b188';
+        context.strokeStyle = color;
         context.stroke();
         context.restore();
 
@@ -181,10 +163,47 @@ async function getcode() {
         context.drawImage(getcodetopimg, 0, 0, cw, cw / getcodetopimg.width * getcodetopimg.height);
     }
 
-    //get code from camera
-    code = await (new Promise(resolve => {
+    //render callback
+    function render(resolve) {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            context.drawImage(video, 0, 0, vw, vh);
+            let imageData = context.getImageData(0, 0, vw, vh);
+            let code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+            if (code) {
+                let data = {};
+                try {
+                    let translatedcode = u_atob(code.data.substr(6));
+                    data = JSON.parse(translatedcode.substr(translatedcode.indexOf('{')));
+                } catch (e) {
+                }
+                if ('nameZh' in data) resolve(data.nameZh);
+                else decorate_camera('#f00');
+
+            } else {
+                decorate_camera('#12b188');
+            }
+        }
         requestAnimationFrame(render.bind(this, resolve));
-    }));
+    }
+
+    //get code from camera
+    let camera_prom = new Promise(resolve => {
+        requestAnimationFrame(render.bind(this, resolve));
+    });
+
+    //back button
+    async function back_async() {
+        while (!locname) {
+            let e = await wait_event({ ele: canvas2, type: 'mousedown' });
+            if (e.clientX < canvas2.clientWidth / getcodetopimg.width * 200 &&
+                e.clientY < canvas2.clientWidth / getcodetopimg.width * 148) return (false);
+        }
+    }
+    let back_prom = back_async();
+
+    locname = await Promise.any([camera_prom, back_prom]);
+    if (!locname) location.reload();
+
 
     canvas2.remove();
     video.remove();
