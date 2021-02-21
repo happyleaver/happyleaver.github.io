@@ -83,7 +83,8 @@ async function showpass() {
     location.reload();
 }
 async function getcode() {
-    let canvas = add({ ele: d1, tag: 'canvas', style: 'position:absolute;background-color:#000;' });
+    let canvas_clip = add({ ele: d1, tag: 'div', style: 'position:absolute;top:0px;left:0px;overflow:hidden;' });
+    let canvas = add({ ele: canvas_clip, tag: 'canvas', style: 'position:absolute;' });
 
     //start camera
     var video = document.createElement("video");
@@ -98,9 +99,13 @@ async function getcode() {
     let vw = canvas.width = video.videoWidth;
     let ch = window.innerWidth / vw * vh;
     let ct = (window.innerHeight - ch) / 2;
-    canvas.style.top = ct + 'px';
-    canvas.style.height = ch + 'px';
-    canvas.style.width = '100vw';
+    {
+        canvas_clip.style.width = '100vw';
+        canvas_clip.style.height = '100vh';
+        canvas.style.marginTop = ct + 'px';
+        canvas.style.height = ch + 'px';
+        canvas.style.width = '100vw';
+    }
 
     let context = canvas.getContext("2d");
 
@@ -157,7 +162,7 @@ async function getcode() {
         context.font = 5 * cp + 'px Arial';
         context.textBaseline = 'middle';
         context.textAlign = 'center'
-        context.fillText('掃瞄二維碼', cw / 2, hy + hh + 13 * cp);
+        context.fillText('掃瞄二維碼' + ct, cw / 2, hy + hh + 13 * cp);
         context.restore();//end second text
 
         context.drawImage(getcodetopimg, 0, 0, cw, cw / getcodetopimg.width * getcodetopimg.height);
