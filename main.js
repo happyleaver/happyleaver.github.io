@@ -100,28 +100,15 @@ async function getcode() {
 
     //setup context
     while (video.readyState != video.HAVE_ENOUGH_DATA) await wait_frame_out();
-    let vh = video.videoHeight;
-    let vw = video.videoWidth;
-    let cw, ch;
-    if (vw / vh > canvas.clientWidth / canvas.clientHeight) {
-        ch = canvas.height = vh;
-        cw = canvas.width = vh * canvas.clientWidth / canvas.clientHeight;
-        vy = 0;
-        vx = (cw - vw) / 2;
-    } else {
-        cw = canvas.width = vw;
-        ch = canvas.height = vw * canvas.clientHeight / canvas.clientWidth;
-        vx = 0;
-        vy = (ch - vh) / 2;
-    }
+    let vh = canvas.height = video.videoHeight;
+    let vw = canvas.width = video.videoWidth;
     let context = canvas.getContext("2d");
-    let cx = cw / 2, cy = ch / 2;
 
     //render callback
     function render(resolve) {
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            context.drawImage(video, vx, vy, vw, vh);
-            let imageData = context.getImageData(vx, vy, vw, vh);
+            context.drawImage(video, 0, 0, vw, vh);
+            let imageData = context.getImageData(0, 0, vw, vh);
             let code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
             if (code) resolve(code.data);
 
