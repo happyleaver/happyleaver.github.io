@@ -185,7 +185,8 @@ async function getcode() {
                     data = JSON.parse(translatedcode.substr(translatedcode.indexOf('{')));
                 } catch (e) {
                 }
-                if ('nameZh' in data) resolve(data.nameZh);
+                if ('nameZh' in data && data.nameZh) resolve(data.nameZh);
+                else if ('nameEn' in data && data.nameEn) resolve(data.nameEn);
                 else decorate_camera('#f00');
 
             } else {
